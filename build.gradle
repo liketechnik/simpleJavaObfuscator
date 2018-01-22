@@ -2,9 +2,18 @@ plugins {
     id "org.jetbrains.kotlin.jvm" version "1.2.10"
 }
 apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'application'
 
 group 'florian.simpleJavaObfuscator'
 version '1.0'
+
+mainClassName = 'florian.simpleJavaObfuscator.Run'
+
+applicationDistribution.from("$rootProject.projectDir/") {
+    include "src/main/java/**"
+    into ""
+}
 
 sourceCompatibility = 1.8
 
