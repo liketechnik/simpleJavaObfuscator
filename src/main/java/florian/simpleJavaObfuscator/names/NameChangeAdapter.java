@@ -1,7 +1,7 @@
 package florian.simpleJavaObfuscator.names;
 
 
-import florian.simpleJavaObfuscator.util.obfuscation.Mappings;
+import florian.simpleJavaObfuscator.util.obfuscation.INameGenerator;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -13,14 +13,14 @@ import static org.objectweb.asm.Opcodes.ASM6;
 /**
  * @author Florian Warzecha
  * @version 1.0
- * @date 14 of Januar 2018
+ * @date 14. Januar 2018
  */
 public class NameChangeAdapter extends ClassVisitor {
     
-    Mappings mappings;
-    String className;
+    private INameGenerator mappings;
+    private String className;
     
-    public NameChangeAdapter(Mappings mappings, ClassVisitor cv) {
+    public NameChangeAdapter(INameGenerator mappings, ClassVisitor cv) {
         super(ASM6, cv);
         System.out.println("Created name change adapter");
         this.mappings = mappings;
@@ -51,5 +51,9 @@ public class NameChangeAdapter extends ClassVisitor {
                                    String signature, Object value) {
         System.out.println("Changed field " + name + " to " + mappings.getFieldName(name, className));
         return cv.visitField(access, mappings.getFieldName(name, className), getObfuscatedFieldTypeDescriptor(desc, mappings), signature, value);
+    }
+    
+    public String getClassName() {
+        return mappings.getClassName(className);
     }
 }

@@ -2,7 +2,7 @@ package florian.simpleJavaObfuscator;
 
 import florian.simpleJavaObfuscator.names.NameChangeAdapter;
 import florian.simpleJavaObfuscator.names.NameGeneratorAdapter;
-import florian.simpleJavaObfuscator.util.obfuscation.Mappings;
+import florian.simpleJavaObfuscator.util.obfuscation.DefaultMappings;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -20,7 +20,7 @@ public class Run {
     
     public static void main(String[] args) throws IOException {
     
-        Mappings mappings = new Mappings();
+        DefaultMappings mappings = new DefaultMappings();
         
         
         
@@ -38,7 +38,7 @@ public class Run {
         }
         for (String file : args) {
             ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES); // setup transforming chain, doing from bottom to top
-            CheckClassAdapter ccv = new CheckClassAdapter(cw); // seems broken
+            CheckClassAdapter ccv = new CheckClassAdapter(cw);
             TraceClassVisitor tcv = new TraceClassVisitor(ccv, new PrintWriter(System.out));
             ClassVisitor changer = new NameChangeAdapter(mappings, tcv);
     

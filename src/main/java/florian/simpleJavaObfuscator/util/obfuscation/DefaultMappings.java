@@ -6,15 +6,15 @@ import java.util.Hashtable;
 /**
  * @author Florian Warzecha
  * @version 1.0
- * @date 11 of Januar 2018
+ * @date 11. Januar 2018
  */
-public class Mappings implements INameGenerator {
+public class DefaultMappings implements INameGenerator {
     
     private Hashtable<String, String> obfuscatedClassNames = new Hashtable<>();
     private Hashtable<String, Hashtable<String, String>> obfuscatedMethodNames = new Hashtable<>();
     private Hashtable<String, String> obfuscatedFieldNames = new Hashtable<>();
     
-    private HashSet<String> methodDescs = new HashSet<String>();
+    private HashSet<String> methodDescs = new HashSet<>();
     
     private char[] classLetters;
     private Hashtable<String, char[]> methodLetters;
@@ -22,10 +22,15 @@ public class Mappings implements INameGenerator {
     
     private int maxNumberOfAutoOverloading = 3;
     
-    public Mappings() {
+    public DefaultMappings() {
         classLetters = new char[]{'a'};
         methodLetters = new Hashtable<>();
         fieldLetters = new char[]{'a'};
+    }
+    
+    public DefaultMappings(int maxNumberOfAutoOverloading) {
+        this();
+        this.maxNumberOfAutoOverloading = maxNumberOfAutoOverloading;
     }
     
     /**
@@ -51,6 +56,7 @@ public class Mappings implements INameGenerator {
         classLetters = this.generateNextName(classLetters);
     }
     
+    @Override
     public String getClassName(String orig) {
         if (obfuscatedClassNames.containsKey(orig)) {
             return obfuscatedClassNames.get(orig);
@@ -126,15 +132,9 @@ public class Mappings implements INameGenerator {
     
     private String toString(char[] letters) {
         StringBuilder name = new StringBuilder();
-        for (int i = 0; i < letters.length; i++) {
-            name.append(letters[i]);
+        for (char letter : letters) {
+            name.append(letter);
         }
         return name.toString();
-    }
-    
-    public static void main(String[] args) {
-        Mappings me = new Mappings();
-        System.out.println(java.util.Arrays.toString(me.generateNextName(new char[]{'a'})));
-        System.out.println(java.util.Arrays.toString(me.generateNextName(new char[]{'z', 'c', 'z'})));
     }
 }

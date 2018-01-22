@@ -3,12 +3,17 @@ package florian.simpleJavaObfuscator.util.obfuscation;
 /**
  * @author Florian Warzecha
  * @version 1.0
- * @date 12 of Januar 2018
+ * @date 12. Januar 2018
  */
 public interface INameGenerator {
     
-    public void createClassName(String orig);
-    public void createMethodName(String orig, String className, String descriptor);
-    public void createFieldName(String orig, String className);
+    void createClassName(String orig);
+    String getClassName(String orig);
+    
+    void createMethodName(String orig, String className, String descriptor);
+    String getMethodName(String orig, String className, String descriptor);
+    
+    void createFieldName(String orig, String className);
+    String getFieldName(String orig, String className);
     
 }

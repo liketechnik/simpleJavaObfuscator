@@ -1,9 +1,7 @@
 package florian.simpleJavaObfuscator.names;
 
-import com.github.liketechnik.ArgumentTypes;
-import florian.simpleJavaObfuscator.util.obfuscation.Mappings;
+import florian.simpleJavaObfuscator.util.obfuscation.INameGenerator;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
@@ -16,10 +14,10 @@ import static org.objectweb.asm.Opcodes.ASM6;
  */
 public class NameGeneratorAdapter extends ClassVisitor {
     
-    Mappings mappings;
-    String className;
+    private INameGenerator mappings;
+    private String className;
     
-    public NameGeneratorAdapter(Mappings mappings, ClassVisitor cv) {
+    public NameGeneratorAdapter(INameGenerator mappings, ClassVisitor cv) {
         super(ASM6, cv);
         this.mappings = mappings;
     }
@@ -46,13 +44,5 @@ public class NameGeneratorAdapter extends ClassVisitor {
         
         mappings.createFieldName(name, className);
         return cv.visitField(access, name, desc, signature, value);
-    }
-    
-    public static void main(String[] args) {
-        char test = 65;
-        System.out.println(test);
-        System.out.println(1 / 3);
-        System.out.println(2 / 3);
-        System.out.println(3  / 3);
     }
 }

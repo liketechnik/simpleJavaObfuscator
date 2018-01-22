@@ -1,6 +1,6 @@
 package florian.simpleJavaObfuscator.names;
 
-import florian.simpleJavaObfuscator.util.obfuscation.Mappings;
+import florian.simpleJavaObfuscator.util.obfuscation.INameGenerator;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.TypePath;
@@ -12,14 +12,14 @@ import static org.objectweb.asm.Opcodes.ASM6;
 /**
  * @author Florian Warzecha
  * @version 1.0
- * @date 14 of Januar 2018
+ * @date 14. Januar 2018
  */
 public class RenameAdapter extends MethodVisitor {
     
-    Mappings mappings;
-    String className;
+    private INameGenerator mappings;
+    private String className;
     
-    public RenameAdapter(Mappings mappings, MethodVisitor mv, String className) {
+    public RenameAdapter(INameGenerator mappings, MethodVisitor mv, String className) {
         super(ASM6, mv);
         System.out.println("created rename adapter");
         this.mappings = mappings;

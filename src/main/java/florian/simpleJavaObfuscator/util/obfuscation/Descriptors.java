@@ -6,11 +6,11 @@ import java.util.List;
 /**
  * @author Florian Warzecha
  * @version 1.0
- * @date 15 of Januar 2018
+ * @date 15. Januar 2018
  */
 public class Descriptors {
     
-    public static String getObfuscatedMethodTypeDescriptor(String orig, Mappings mappings) {
+    public static String getObfuscatedMethodTypeDescriptor(String orig, INameGenerator mappings) {
         String[] parts = orig.split("\\)");
         System.out.println("Transforming return type");
         parts[1] = getObfuscatedFieldTypeDescriptor(parts[1], mappings); // transform return type
@@ -69,7 +69,7 @@ public class Descriptors {
         return obfuscatedDescriptor.toString();
     }
     
-    public static String getObfuscatedFieldTypeDescriptor(String orig, Mappings mappings) {
+    public static String getObfuscatedFieldTypeDescriptor(String orig, INameGenerator mappings) {
         System.out.println("Called with argument: " + orig);
         if (stringIsNativeTypeDescriptor(orig)) {
             return orig;
