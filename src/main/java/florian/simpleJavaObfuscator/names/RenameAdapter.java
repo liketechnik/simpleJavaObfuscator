@@ -2,6 +2,7 @@ package florian.simpleJavaObfuscator.names;
 
 import florian.simpleJavaObfuscator.util.obfuscation.INameGenerator;
 import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.TypePath;
 
@@ -17,13 +18,11 @@ import static org.objectweb.asm.Opcodes.ASM6;
 public class RenameAdapter extends MethodVisitor {
     
     private INameGenerator mappings;
-    private String className;
     
-    public RenameAdapter(INameGenerator mappings, MethodVisitor mv, String className) {
+    public RenameAdapter(INameGenerator mappings, MethodVisitor mv) {
         super(ASM6, mv);
         System.out.println("created rename adapter");
         this.mappings = mappings;
-        this.className = className;
     }
     
     @Override
@@ -97,5 +96,11 @@ public class RenameAdapter extends MethodVisitor {
         mv.visitMethodInsn(opcode, owner, name, desc, itf);
     }
     
-    // many methods missing todo
+    @Override
+    public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
+        System.out.println("Visiting (and removing) local variable: " + name + " " + desc + " " + signature + " " + start + " " + end + " " + index);
+    }
+    
+    @Override
+    public void visitLineNumber(int line, Label start) {}
 }

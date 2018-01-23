@@ -31,7 +31,47 @@ public class NameChangeAdapter extends ClassVisitor {
                       String[] interfaces) {
         this.className = name;
         System.out.println("Changed class " + name + " to " + mappings.getClassName(className));
-        cv.visit(version, access, mappings.getClassName(className), signature, superName, interfaces); // superName is also a class name todo
+        
+        for (int i = 0; i < interfaces.length; i++) {
+            interfaces[i] = mappings.getClassName(interfaces[i]);
+        }
+        
+        if (superName != null) {
+            cv.visit(version, access, mappings.getClassName(className), signature, mappings.getClassName(superName), interfaces);
+        } else {
+            cv.visit(version, access, mappings.getClassName(className), signature, superName, interfaces);
+        }
+    }
+    
+    @Override
+    public void visitSource(String source, String debug) {}
+    
+    @Override
+    public void visitOuterClass(String owner, String name, String desc) {
+        if (name != null && desc != null) {
+            name = mappings.getMethodName(name, owner, desc);
+            desc = getObfuscatedMethodTypeDescriptor(desc, mappings);
+        }
+    
+        owner = mappings.getClassName(owner);
+        
+        cv.visitOuterClass(owner, name, desc);
+    }
+    
+    @Override
+    public void visitInnerClass(String name, String outerName, String innerName, int access) {
+        name = mappings.getClassName(name);
+        outerName = mappings.getClassName(outerName);
+        innerName = mappings.getClassName(innerName);
+        
+        cv.visitInnerClass(name, outerName, innerName, access);
+    }
+    
+    @Override
+    public FieldVisitor visitField(int access, String name, String desc,
+                                   String signature, Object value) {
+        System.out.println("Changed field " + name + " to " + mappings.getFieldName(name, className));
+        return cv.visitField(access, mappings.getFieldName(name, className), getObfuscatedFieldTypeDescriptor(desc, mappings), signature, value);
     }
     
     @Override
@@ -40,17 +80,15 @@ public class NameChangeAdapter extends ClassVisitor {
     
         System.out.println("Changed method " + name + " to " + mappings.getMethodName(name, className, desc));
         
-        MethodVisitor mv = cv.visitMethod(access, mappings.getMethodName(name, className, desc), getObfuscatedMethodTypeDescriptor(desc, mappings), signature, exceptions); // exceptions contain class names todo
+        for (int i = 0; i < exceptions.length; i++) {
+            exceptions[i] = mappings.getClassName(exceptions[i]);
+        }
+        
+        MethodVisitor mv = cv.visitMethod(access, mappings.getMethodName(name, className, desc), getObfuscatedMethodTypeDescriptor(desc, mappings), signature, exceptions);
         if (mv != null) {
-            mv = new RenameAdapter(mappings, mv, className);
+            mv = new RenameAdapter(mappings, mv);
         }
         return mv;
-    }
-    
-    public FieldVisitor visitField(int access, String name, String desc,
-                                   String signature, Object value) {
-        System.out.println("Changed field " + name + " to " + mappings.getFieldName(name, className));
-        return cv.visitField(access, mappings.getFieldName(name, className), getObfuscatedFieldTypeDescriptor(desc, mappings), signature, value);
     }
     
     public String getClassName() {

@@ -19,15 +19,14 @@ import java.io.*;
 public class Run {
     
     public static void main(String[] args) throws IOException {
-    
-        DefaultMappings mappings = new DefaultMappings();
         
+        DefaultMappings mappings = new DefaultMappings();
         
         
         for (String file : args) {
             TraceClassVisitor tcv2 = new TraceClassVisitor(new PrintWriter(System.out));
             ClassVisitor generator = new NameGeneratorAdapter(mappings, tcv2);
-    
+            
             File f = new File(file);
             byte[] input = new byte[(int) f.length()];
             InputStream in = new FileInputStream(f);
@@ -41,15 +40,15 @@ public class Run {
             CheckClassAdapter ccv = new CheckClassAdapter(cw);
             TraceClassVisitor tcv = new TraceClassVisitor(ccv, new PrintWriter(System.out));
             ClassVisitor changer = new NameChangeAdapter(mappings, tcv);
-    
+            
             File f = new File(file);
             byte[] input = new byte[(int) f.length()];
             InputStream in = new FileInputStream(f);
             in.read(input);
             in.close();
             ClassReader cr = new ClassReader(input);
-            cr.accept(changer, ClassReader.SKIP_DEBUG);
-    
+            cr.accept(changer, ClassReader.SKIP_FRAMES);
+            
             byte[] output = cw.toByteArray();
             OutputStream out = new FileOutputStream(new File(file + "mod"));
             out.write(output);
