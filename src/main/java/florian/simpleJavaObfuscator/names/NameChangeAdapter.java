@@ -22,7 +22,7 @@ public class NameChangeAdapter extends ClassVisitor {
     
     public NameChangeAdapter(INameGenerator mappings, ClassVisitor cv) {
         super(ASM6, cv);
-        System.out.println("Created name change adapter");
+        mappings.getLog().println("Created name change adapter");
         this.mappings = mappings;
     }
     
@@ -30,7 +30,7 @@ public class NameChangeAdapter extends ClassVisitor {
     public void visit(int version, int access, String name, String signature, String superName,
                       String[] interfaces) {
         this.className = name;
-        System.out.println("Changed class " + name + " to " + mappings.getClassName(className));
+        mappings.getLog().println("Changed class " + name + " to " + mappings.getClassName(className));
         
         for (int i = 0; i < interfaces.length; i++) {
             interfaces[i] = mappings.getClassName(interfaces[i]);
@@ -70,7 +70,7 @@ public class NameChangeAdapter extends ClassVisitor {
     @Override
     public FieldVisitor visitField(int access, String name, String desc,
                                    String signature, Object value) {
-        System.out.println("Changed field " + name + " to " + mappings.getFieldName(name, className));
+        mappings.getLog().println("Changed field " + name + " to " + mappings.getFieldName(name, className));
         return cv.visitField(access, mappings.getFieldName(name, className), getObfuscatedFieldTypeDescriptor(desc, mappings), signature, value);
     }
     
@@ -78,10 +78,12 @@ public class NameChangeAdapter extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String desc,
                                      String signature, String[] exceptions) {
     
-        System.out.println("Changed method " + name + " to " + mappings.getMethodName(name, className, desc));
+        mappings.getLog().println("Changed method " + name + " to " + mappings.getMethodName(name, className, desc));
         
-        for (int i = 0; i < exceptions.length; i++) {
-            exceptions[i] = mappings.getClassName(exceptions[i]);
+        if (exceptions != null) {
+            for (int i = 0; i < exceptions.length; i++) {
+                exceptions[i] = mappings.getClassName(exceptions[i]);
+            }
         }
         
         MethodVisitor mv = cv.visitMethod(access, mappings.getMethodName(name, className, desc), getObfuscatedMethodTypeDescriptor(desc, mappings), signature, exceptions);
@@ -89,9 +91,5 @@ public class NameChangeAdapter extends ClassVisitor {
             mv = new RenameAdapter(mappings, mv);
         }
         return mv;
-    }
-    
-    public String getClassName() {
-        return mappings.getClassName(className);
     }
 }

@@ -1,5 +1,7 @@
 package florian.simpleJavaObfuscator.util.obfuscation;
 
+import java.io.PrintWriter;
+
 /**
  * @author Florian Warzecha
  * @version 1.0
@@ -15,5 +17,8 @@ public interface INameGenerator {
     
     void createFieldName(String orig, String className);
     String getFieldName(String orig, String className);
+    
+    PrintWriter getLog();
+    void setLog(PrintWriter printWriter);
     
 }

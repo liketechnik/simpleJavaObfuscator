@@ -1,5 +1,6 @@
 package florian.simpleJavaObfuscator.util.obfuscation;
 
+import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Hashtable;
 
@@ -9,6 +10,8 @@ import java.util.Hashtable;
  * @date 11. Januar 2018
  */
 public class DefaultMappings implements INameGenerator {
+    
+    private PrintWriter printWriter;
     
     private Hashtable<String, String> obfuscatedClassNames = new Hashtable<>();
     private Hashtable<String, Hashtable<String, String>> obfuscatedMethodNames = new Hashtable<>();
@@ -26,11 +29,25 @@ public class DefaultMappings implements INameGenerator {
         classLetters = new char[]{'a'};
         methodLetters = new Hashtable<>();
         fieldLetters = new char[]{'a'};
+        
+        printWriter = new PrintWriter(System.out);
     }
     
     public DefaultMappings(int maxNumberOfAutoOverloading) {
         this();
         this.maxNumberOfAutoOverloading = maxNumberOfAutoOverloading;
+    }
+    
+    @Override
+    public PrintWriter getLog() {
+        return printWriter;
+    }
+    
+    @Override
+    public void setLog(PrintWriter printWriter) {
+        if (printWriter != null) {
+            this.printWriter = printWriter;
+        }
     }
     
     /**

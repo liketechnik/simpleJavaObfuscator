@@ -12,9 +12,9 @@ public class Descriptors {
     
     public static String getObfuscatedMethodTypeDescriptor(String orig, INameGenerator mappings) {
         String[] parts = orig.split("\\)");
-        System.out.println("Transforming return type");
+        mappings.getLog().println("Transforming return type");
         parts[1] = getObfuscatedFieldTypeDescriptor(parts[1], mappings); // transform return type
-        System.out.println("Transforming paramters");
+        mappings.getLog().println("Transforming paramters");
     
         List<String> params = new LinkedList<>();
         parts[0] = parts[0].substring(1);
@@ -55,6 +55,7 @@ public class Descriptors {
                     
                     numberOfBrackets = 0;
                 } else {
+                    mappings.getLog().println("This shouldn't happen! Found char " + cha + " while not parsing a class name!");
                     System.err.println("This shouldn't happen! Found char " + cha + " while not parsing a class name!");
                 }
             }
@@ -70,7 +71,6 @@ public class Descriptors {
     }
     
     public static String getObfuscatedFieldTypeDescriptor(String orig, INameGenerator mappings) {
-        System.out.println("Called with argument: " + orig);
         if (stringIsNativeTypeDescriptor(orig)) {
             return orig;
         }

@@ -21,7 +21,7 @@ public class RenameAdapter extends MethodVisitor {
     
     public RenameAdapter(INameGenerator mappings, MethodVisitor mv) {
         super(ASM6, mv);
-        System.out.println("created rename adapter");
+        mappings.getLog().println("created rename adapter");
         this.mappings = mappings;
     }
     
@@ -34,7 +34,7 @@ public class RenameAdapter extends MethodVisitor {
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
         String orig = desc;
         desc = getObfuscatedFieldTypeDescriptor(desc, mappings);
-        System.out.println("Replaced Annotation '" + orig + "' with '" + desc + "'.");
+        mappings.getLog().println("Replaced Annotation '" + orig + "' with '" + desc + "'.");
         return mv.visitAnnotation(desc, visible);
     }
     
@@ -43,7 +43,7 @@ public class RenameAdapter extends MethodVisitor {
                                                  boolean visible) {
         String orig = desc;
         desc = getObfuscatedFieldTypeDescriptor(desc, mappings);
-        System.out.println("Replaced TypeAnnotation '" + orig + "' with '" + desc + "'.");
+        mappings.getLog().println("Replaced TypeAnnotation '" + orig + "' with '" + desc + "'.");
         return mv.visitTypeAnnotation(typeRef, typePath, desc, visible);
     }
     
@@ -51,7 +51,7 @@ public class RenameAdapter extends MethodVisitor {
     public AnnotationVisitor visitParameterAnnotation(int parameter, String desc, boolean visible) {
         String orig = desc;
         desc = getObfuscatedFieldTypeDescriptor(desc, mappings);
-        System.out.println("Replaced ParamterAnnotation '" + orig + "' with '" + desc + "'.");
+        mappings.getLog().println("Replaced ParamterAnnotation '" + orig + "' with '" + desc + "'.");
         return mv.visitParameterAnnotation(parameter, desc, visible);
     }
     
@@ -59,7 +59,7 @@ public class RenameAdapter extends MethodVisitor {
     public void visitTypeInsn(int opcode, String type) {
         String orig = type;
         type = mappings.getClassName(type);
-        System.out.println("Replaced typeInsn '" + orig + "' with '" + type + "'.");
+        mappings.getLog().println("Replaced typeInsn '" + orig + "' with '" + type + "'.");
         mv.visitTypeInsn(opcode, type);
     }
     
@@ -75,7 +75,7 @@ public class RenameAdapter extends MethodVisitor {
         desc = getObfuscatedFieldTypeDescriptor(desc, mappings);
         
         
-        System.out.println("Replaced fieldInsn '" + ownerOr + ", " + nameOr + ", " + descOr + " with " + owner + ", " + name + ", " + desc + ".");
+        mappings.getLog().println("Replaced fieldInsn '" + ownerOr + ", " + nameOr + ", " + descOr + " with " + owner + ", " + name + ", " + desc + ".");
         
         mv.visitFieldInsn(opcode, owner, name, desc);
     }
@@ -91,14 +91,14 @@ public class RenameAdapter extends MethodVisitor {
         desc = getObfuscatedMethodTypeDescriptor(desc, mappings);
     
     
-        System.out.println("Replaced methodInsn '" + ownerOr + ", " + nameOr + ", " + descOr + " with " + owner + ", " + name + ", " + desc + ".");
+        mappings.getLog().println("Replaced methodInsn '" + ownerOr + ", " + nameOr + ", " + descOr + " with " + owner + ", " + name + ", " + desc + ".");
     
         mv.visitMethodInsn(opcode, owner, name, desc, itf);
     }
     
     @Override
     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
-        System.out.println("Visiting (and removing) local variable: " + name + " " + desc + " " + signature + " " + start + " " + end + " " + index);
+        mappings.getLog().println("Visiting (and removing) local variable: " + name + " " + desc + " " + signature + " " + start + " " + end + " " + index);
     }
     
     @Override
