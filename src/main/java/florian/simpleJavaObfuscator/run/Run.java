@@ -29,7 +29,11 @@ public class Run {
             System.exit(1);
         }
         if (obfuscationType.equals("file")) {
-            SimpleFile.run(Arrays.copyOfRange(args, 1, args.length));
+            if (args.length > 1) {
+                SimpleFile.run(Arrays.copyOfRange(args, 1, args.length));
+            } else {
+                SimpleFile.run(args);
+            }
         } else {
             System.err.println("Currently not implemented! Please extract manually and apply to the single files.");
         }

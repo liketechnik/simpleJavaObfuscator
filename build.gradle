@@ -8,7 +8,7 @@ apply plugin: 'application'
 group 'florian.simpleJavaObfuscator'
 version '1.0'
 
-mainClassName = 'florian.simpleJavaObfuscator.Run'
+mainClassName = 'florian.simpleJavaObfuscator.run.Run'
 
 applicationDistribution.from("$rootProject.projectDir/") {
     include "src/main/java/**"
