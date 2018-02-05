@@ -11,9 +11,14 @@ import static florian.simpleJavaObfuscator.util.obfuscation.Descriptors.getObfus
 import static org.objectweb.asm.Opcodes.ASM6;
 
 /**
+ * This class is responsible for applying the changes inside the bytecode of methods. The new names
+ * are hold inside {@link #mappings}.
+ *
  * @author Florian Warzecha
  * @version 1.0
  * @date 14. Januar 2018
+ *
+ * @see NameChangeAdapter Calls this class when needed
  */
 public class RenameAdapter extends MethodVisitor {
     
@@ -27,7 +32,7 @@ public class RenameAdapter extends MethodVisitor {
     
     @Override
     public void visitParameter(String name, int access) {
-        mv.visitParameter(null, access);
+        mv.visitParameter(null, access); // parameter names can be simply deleted, not needed inside bytecode
     }
     
     @Override
@@ -101,6 +106,11 @@ public class RenameAdapter extends MethodVisitor {
         mappings.getLog().println("Visiting (and removing) local variable: " + name + " " + desc + " " + signature + " " + start + " " + end + " " + index);
     }
     
+    /**
+     * Doing nothing because we want to remove as much unneeded information as possible.
+     * @param line The line number
+     * @param start The label
+     */
     @Override
     public void visitLineNumber(int line, Label start) {}
 }

@@ -3,6 +3,8 @@ package florian.simpleJavaObfuscator.util.obfuscation;
 import java.io.PrintWriter;
 
 /**
+ * Interface for name generators used by the name obfuscation classes.
+ *
  * @author Florian Warzecha
  * @version 1.0
  * @date 12. Januar 2018

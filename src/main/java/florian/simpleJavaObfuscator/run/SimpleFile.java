@@ -29,6 +29,7 @@ public class SimpleFile {
         INameGenerator mappings = new DefaultMappings();
         SimpleFile simpleFile = new SimpleFile(mappings);
         
+        // generate new names
         for (String file : files) {
             File clazz = new File(file);
             File trace = new File(file.replace(".", "_") + "_origTrace.txt");
@@ -45,6 +46,7 @@ public class SimpleFile {
             }
         }
         
+        // apply the new names
         for (String file : files) {
             File clazz = new File(file);
             File obfClazz = generateObfFile(clazz, mappings);
@@ -69,6 +71,12 @@ public class SimpleFile {
         this.mappings = mappings;
     }
     
+    /**
+     * Building the event chain for parsing the clazz and generate new names for it.
+     * @param clazz
+     * @param trace The file where the clazz trace goes to.
+     * @throws IOException
+     */
     public void generateMappings(File clazz, File trace) throws IOException {
         TraceClassVisitor tcv = new TraceClassVisitor(new PrintWriter(trace));
         ClassVisitor generator = new NameGeneratorAdapter(mappings, tcv);
@@ -77,6 +85,13 @@ public class SimpleFile {
         cr.accept(generator, ClassReader.SKIP_DEBUG);
     }
     
+    /**
+     * Building the event chain for transforming the clazz and apply the new names for it.
+     * @param origClazz The file containing the original clazz.
+     * @param obfClazz The file the new, obfuscated clazz is written into.
+     * @param trace The file where the obfuscated clazz trace goes to.
+     * @throws IOException
+     */
     public void applyMappings(File origClazz, File obfClazz, File trace) throws IOException {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         CheckClassAdapter ccv = new CheckClassAdapter(cw);

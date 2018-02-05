@@ -8,9 +8,14 @@ import org.objectweb.asm.MethodVisitor;
 import static org.objectweb.asm.Opcodes.ASM6;
 
 /**
+ * This class is responsible for generating new names for classes and their methods + fields.
+ * These names are generated and saved by the {@link #mappings} and applied by the {@link NameChangeAdapter}
+ *
  * @author Florian Warzecha
  * @version 1.0
  * @date 11. Januar 2018
+ * @see NameChangeAdapter
+ * @see INameGenerator
  */
 public class NameGeneratorAdapter extends ClassVisitor {
     
@@ -33,7 +38,7 @@ public class NameGeneratorAdapter extends ClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc,
                                      String signature, String[] exceptions) {
-        if (!name.equals("<init>") && !name.equals("main")) {
+        if (!name.equals("<init>") && !name.equals("main")) { // exclude methods whose name must not be changed
             mappings.createMethodName(name, className, desc);
         }
         return cv.visitMethod(access,name, desc, signature, exceptions);

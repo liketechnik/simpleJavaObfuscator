@@ -3,6 +3,8 @@ package florian.simpleJavaObfuscator.util.files;
 import java.io.*;
 
 /**
+ * Helper class for writing or retrieving a files content represented by a byte array.
+ *
  * @author Florian Warzecha
  * @version 1.0
  * @date 02 of Februar 2018

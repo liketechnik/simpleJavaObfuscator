@@ -10,15 +10,22 @@ import java.util.List;
  */
 public class Descriptors {
     
+    /**
+     * Checks a method type descriptor for class names that need to be obfuscated
+     * @param orig
+     * @param mappings
+     * @return
+     */
     public static String getObfuscatedMethodTypeDescriptor(String orig, INameGenerator mappings) {
-        String[] parts = orig.split("\\)");
+        String[] parts = orig.split("\\)"); // split parameters and return type
         mappings.getLog().println("Transforming return type");
         parts[1] = getObfuscatedFieldTypeDescriptor(parts[1], mappings); // transform return type
         mappings.getLog().println("Transforming paramters");
     
+        // parse parameters now
         List<String> params = new LinkedList<>();
-        parts[0] = parts[0].substring(1);
-        int numberOfBrackets = 0;
+        parts[0] = parts[0].substring(1); // remove '('
+        int numberOfBrackets = 0; // for arrays
         StringBuilder currentName = new StringBuilder();
         boolean parsing = false;
         for (char cha : parts[0].toCharArray()) {
@@ -26,14 +33,14 @@ public class Descriptors {
                 numberOfBrackets++;
                 continue;
             }
-            if (parsing) {
+            if (parsing) { // parse object name
                 if (cha == ';') {
                     currentName.append(cha);
                     for (int i = 0; i < numberOfBrackets; i++) {
                         currentName.insert(0, '[');
                     }
                     
-                    params.add(getObfuscatedFieldTypeDescriptor(currentName.toString(), mappings));
+                    params.add(getObfuscatedFieldTypeDescriptor(currentName.toString(), mappings)); // apply obfuscation to class name
                     
                     numberOfBrackets = 0;
                     parsing = false;
@@ -42,6 +49,7 @@ public class Descriptors {
                     currentName.append(cha);
                 }
             } else {
+                // check if parameter type is an class
                 if (cha == 'L') {
                     parsing = true;
                     currentName = new StringBuilder().append('L');
@@ -61,6 +69,7 @@ public class Descriptors {
             }
         }
         
+        // combine params and return type to valid method descriptor
         StringBuilder obfuscatedDescriptor = new StringBuilder().append("(");
         for (String entry : params) {
             obfuscatedDescriptor.append(entry);
@@ -84,16 +93,16 @@ public class Descriptors {
         }
         parts[classIndex] = "L" + mappings.getClassName(parts[classIndex].substring(0, parts[classIndex].length() - 1)) + ";"; // remove semicolon (last char) [.substring()]
         if (classIndex == 0) { // either class name at index 0
-            //System.out.println("Replaced '" + orig + "' with '" + parts[classIndex] + "'.");
+            System.out.println("Replaced '" + orig + "' with '" + parts[classIndex] + "'.");
             return parts[classIndex];
         } else { // or class name at index 1, array declaration at index 0
-           // System.out.println("Replaced '" + orig + "' with '" + parts[0] + parts[classIndex] + "'.");
+            System.out.println("Replaced '" + orig + "' with '" + parts[0] + parts[classIndex] + "'.");
             return parts[0] + parts[classIndex];
         }
     }
     
     private static boolean stringIsNativeTypeDescriptor(String test) {
-        String[] descriptor = new String[]{"Z", "C", "B", "S", "I", "F", "J", "D", "V"};
+        String[] descriptor = new String[]{"Z", "C", "B", "S", "I", "F", "J", "D", "V"}; // native type descriptor in bytecode
         test = test.replaceAll("\\[", "");
         for (String prefix : descriptor) {
             if (test.startsWith(prefix) && test.length() == 1) {

@@ -8,9 +8,11 @@ import java.io.*;
 import java.util.Arrays;
 
 /**
+ * Starts the obfuscation Process
+ *
  * @author Florian Warzecha
  * @version 1.0
- * @date 14 of Januar 2018
+ * @date 14. Januar 2018
  */
 public class Run {
     

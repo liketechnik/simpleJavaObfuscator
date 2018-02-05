@@ -11,9 +11,15 @@ import static florian.simpleJavaObfuscator.util.obfuscation.Descriptors.getObfus
 import static org.objectweb.asm.Opcodes.ASM6;
 
 /**
+ * This class is responsible for applying the changes written into the {@link #mappings} by the
+ * {@link NameGeneratorAdapter}.
+ *
  * @author Florian Warzecha
  * @version 1.0
  * @date 14. Januar 2018
+ * @see NameGeneratorAdapter
+ * @see INameGenerator The interface that holds the new names
+ * @see RenameAdapter Applies the changes to the methods internal code.
  */
 public class NameChangeAdapter extends ClassVisitor {
     
@@ -43,6 +49,11 @@ public class NameChangeAdapter extends ClassVisitor {
         }
     }
     
+    /**
+     * Left empty because we want to remove obvious information.
+     * @param source The source file name of this class.
+     * @param debug Debug information.
+     */
     @Override
     public void visitSource(String source, String debug) {}
     
