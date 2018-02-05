@@ -5,6 +5,15 @@ import java.util.HashSet;
 import java.util.Hashtable;
 
 /**
+ * An implementation of the {@link INameGenerator} interface, providing
+ * non random names for classes, methods and fields.
+ *
+ * The first name for classes, methods and fields is for each a, then b, c and so on.
+ * When 26 names have been used, it adds one character, eg. aa, ab, ac...
+ *
+ * Performs auto-overloading of methods. How many methods get the same name
+ * can be controlled via {@link #maxNumberOfAutoOverloading}. By default its value is 3.
+ *
  * @author Florian Warzecha
  * @version 1.0
  * @date 11. Januar 2018
@@ -14,21 +23,21 @@ public class DefaultMappings implements INameGenerator {
     private PrintWriter printWriter;
     
     private Hashtable<String, String> obfuscatedClassNames = new Hashtable<>();
-    private Hashtable<String, Hashtable<String, String>> obfuscatedMethodNames = new Hashtable<>();
-    private Hashtable<String, String> obfuscatedFieldNames = new Hashtable<>();
+    private Hashtable<String, Hashtable<String, Hashtable<String, String>>> obfuscatedMethodNames = new Hashtable<>(); // class, desc, name
+    private Hashtable<String, Hashtable<String, String>> obfuscatedFieldNames = new Hashtable<>(); // class, name
     
-    private HashSet<String> methodDescs = new HashSet<>();
+    private Hashtable<String, HashSet<String>> methodDescs = new Hashtable<>(); // class
     
     private char[] classLetters;
-    private Hashtable<String, char[]> methodLetters;
-    private char[] fieldLetters;
+    private Hashtable<String, Hashtable<String, char[]>> methodLetters; // class, desc
+    private Hashtable<String, char[]> fieldLetters; // class
     
     private int maxNumberOfAutoOverloading = 3;
     
     public DefaultMappings() {
         classLetters = new char[]{'a'};
         methodLetters = new Hashtable<>();
-        fieldLetters = new char[]{'a'};
+        fieldLetters = new Hashtable<>();
         
         printWriter = new PrintWriter(System.out);
     }
@@ -83,42 +92,70 @@ public class DefaultMappings implements INameGenerator {
     
     @Override
     public void createMethodName(String orig, String className, String descriptor) {
-        // grouping methods by descriptor, only methods with new descriptor need new name
+        descriptor = descriptor.split("\\)")[0]; // only when parameters are different
+        
+        // if this is the first field from the class, initialize
+        if (!methodDescs.containsKey(className)) {
+            methodDescs.put(className, new HashSet<>());
+            obfuscatedMethodNames.put(className, new Hashtable<>());
+            methodLetters.put(className, new Hashtable<>());
+        }
+        // replace global ones with local ones that dont contain all classes
+        HashSet<String> methodDescs = this.methodDescs.get(className);
+        Hashtable<String, Hashtable<String, String>> obfuscatedMethodNames = this.obfuscatedMethodNames.get(className); // desc, name
+        Hashtable<String, char[]> methodLetters = this.methodLetters.get(className); // desc
+        
+        // grouping methods by descriptor, only methods with new descriptor from need new name
         if (!methodDescs.contains(descriptor)) {
+            // initializing letter array and new hashables
             obfuscatedMethodNames.put(descriptor, new Hashtable<>());
             
             int additionalOffset = methodDescs.size() / maxNumberOfAutoOverloading; // start new names for methods with a new descriptor with another letter after certain number of overloads
-            char[] methodLetters = new char[]{'a'};
+            char[] methodLettersChar = new char[]{'a'};
             for (int i = 0; i < additionalOffset; i++) {
-                methodLetters = generateNextName(methodLetters);
+                methodLettersChar = generateNextName(methodLettersChar);
             }
-            this.methodLetters.put(descriptor, methodLetters);
+            methodLetters.put(descriptor, methodLettersChar);
             
             methodDescs.add(descriptor);
         }
         
         String result = this.toString(methodLetters.get(descriptor));
-        obfuscatedMethodNames.get(descriptor).put(className + "#" + orig, result);
+        obfuscatedMethodNames.get(descriptor).put(orig, result);
         methodLetters.put(descriptor, this.generateNextName(methodLetters.get(descriptor)));
     }
     
     public String getMethodName(String orig, String className, String descriptor) {
-        if (obfuscatedMethodNames.containsKey(descriptor) && obfuscatedMethodNames.get(descriptor).containsKey(className + "#" + orig)) {
-            return obfuscatedMethodNames.get(descriptor).get(className + "#" + orig);
+        descriptor = descriptor.split("\\)")[0];
+        if (obfuscatedMethodNames.containsKey(className) && // check if methods from class are obfuscated
+                    obfuscatedMethodNames.get(className).containsKey(descriptor) && // check if desc is obfuscated
+                        obfuscatedMethodNames.get(className).get(descriptor).containsKey(orig)) { // check if method is obfuscated
+            return obfuscatedMethodNames.get(className).get(descriptor).get(orig);
         }
         return orig;
     }
     
     @Override
     public void createFieldName(String orig, String className) {
+        // if this is the first field from the class, initialize
+        if (!fieldLetters.containsKey(className)) {
+            fieldLetters.put(className, new char[]{'a'});
+            obfuscatedFieldNames.put(className, new Hashtable<>());
+        }
+        // retrieve letters and hashtable for current class
+        char[] fieldLetters = this.fieldLetters.get(className);
+        Hashtable<String, String> obfuscatedFieldNames = this.obfuscatedFieldNames.get(className);
+        
+        // store obfuscated name and generate next one
         String result = this.toString(fieldLetters);
-        obfuscatedFieldNames.put(className + "#" + orig, result);
-        fieldLetters = this.generateNextName(fieldLetters);
+        obfuscatedFieldNames.put(orig, result);
+        this.fieldLetters.put(className, generateNextName(fieldLetters));
     }
     
     public String getFieldName(String orig, String className) {
-        if (obfuscatedFieldNames.containsKey(className + "#" + orig)) {
-            return obfuscatedFieldNames.get(className + "#" + orig);
+        if (obfuscatedFieldNames.containsKey(className) && // check if fields for this class are obfuscated
+                    obfuscatedFieldNames.get(className).containsKey(orig)) { // check if this field is obfuscated
+            return obfuscatedFieldNames.get(className).get(orig); // return obfuscated name
         }
         return orig;
     }
