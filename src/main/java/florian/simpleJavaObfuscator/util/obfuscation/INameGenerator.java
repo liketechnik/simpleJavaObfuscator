@@ -10,7 +10,6 @@ import java.io.PrintWriter;
  * @date 12. Januar 2018
  */
 public interface INameGenerator {
-    
     void createClassName(String orig);
     String getClassName(String orig);
     
@@ -22,5 +21,4 @@ public interface INameGenerator {
     
     PrintWriter getLog();
     void setLog(PrintWriter printWriter);
-    
 }

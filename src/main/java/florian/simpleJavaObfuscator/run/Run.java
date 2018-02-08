@@ -15,8 +15,7 @@ import java.util.Arrays;
  * @date 14. Januar 2018
  */
 public class Run {
-    
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
     
         Parameter[] params = new Parameter[]{new ObfuscationTypeParam()};
         

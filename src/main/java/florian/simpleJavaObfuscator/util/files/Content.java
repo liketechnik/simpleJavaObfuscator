@@ -10,7 +10,6 @@ import java.io.*;
  * @date 02 of Februar 2018
  */
 public class Content {
-    
     public static byte[] getFileContent(File file) throws IOException {
         byte[] input = new byte[(int) file.length()];
         InputStream in = new FileInputStream(file);

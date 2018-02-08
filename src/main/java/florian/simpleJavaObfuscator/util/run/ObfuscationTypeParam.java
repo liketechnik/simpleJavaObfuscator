@@ -9,7 +9,6 @@ import com.github.liketechnik.Parameter;
  * @date 24. Januar 2018
  */
 public class ObfuscationTypeParam extends Parameter {
-    
     @Override
     public String getId() {
         return "obfuscationType";

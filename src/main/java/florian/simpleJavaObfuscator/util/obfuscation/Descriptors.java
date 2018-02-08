@@ -93,10 +93,10 @@ public class Descriptors {
         }
         parts[classIndex] = "L" + mappings.getClassName(parts[classIndex].substring(0, parts[classIndex].length() - 1)) + ";"; // remove semicolon (last char) [.substring()]
         if (classIndex == 0) { // either class name at index 0
-            System.out.println("Replaced '" + orig + "' with '" + parts[classIndex] + "'.");
+            mappings.getLog().println("Replaced '" + orig + "' with '" + parts[classIndex] + "'.");
             return parts[classIndex];
         } else { // or class name at index 1, array declaration at index 0
-            System.out.println("Replaced '" + orig + "' with '" + parts[0] + parts[classIndex] + "'.");
+            mappings.getLog().println("Replaced '" + orig + "' with '" + parts[0] + parts[classIndex] + "'.");
             return parts[0] + parts[classIndex];
         }
     }

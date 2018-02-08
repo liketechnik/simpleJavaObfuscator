@@ -23,13 +23,13 @@ public class DefaultMappings implements INameGenerator {
     private PrintWriter printWriter;
     
     private Hashtable<String, String> obfuscatedClassNames = new Hashtable<>();
-    private Hashtable<String, Hashtable<String, Hashtable<String, String>>> obfuscatedMethodNames = new Hashtable<>(); // class, desc, name
+    private Hashtable<String, Hashtable<String, Hashtable<String, String>>> obfuscatedMethodNames = new Hashtable<>(); // class, params, name
     private Hashtable<String, Hashtable<String, String>> obfuscatedFieldNames = new Hashtable<>(); // class, name
     
     private Hashtable<String, HashSet<String>> methodDescs = new Hashtable<>(); // class
     
     private char[] classLetters;
-    private Hashtable<String, Hashtable<String, char[]>> methodLetters; // class, desc
+    private Hashtable<String, Hashtable<String, char[]>> methodLetters; // class, params
     private Hashtable<String, char[]> fieldLetters; // class
     
     private int maxNumberOfAutoOverloading = 3;
@@ -59,11 +59,6 @@ public class DefaultMappings implements INameGenerator {
         }
     }
     
-    /**
-     *
-     * @param orig The fully qualified class name.
-     * @return
-     */
     @Override
     public void createClassName(String orig) {
         String result;
@@ -73,9 +68,9 @@ public class DefaultMappings implements INameGenerator {
                 origArr[i] = new StringBuilder(origArr[i]).reverse().toString();
             }
     
-            result = origArr[1] + "/" + this.toString(this.classLetters);
+            result = origArr[1] + "/" + new String(this.classLetters);
         } else {
-            result = this.toString(this.classLetters);
+            result = new String(this.classLetters);
         }
         
         obfuscatedClassNames.put(orig, result);
@@ -92,7 +87,7 @@ public class DefaultMappings implements INameGenerator {
     
     @Override
     public void createMethodName(String orig, String className, String descriptor) {
-        descriptor = descriptor.split("\\)")[0]; // only when parameters are different
+        String params = descriptor.split("\\)")[0]; // only when parameters are different
         
         // if this is the first field from the class, initialize
         if (!methodDescs.containsKey(className)) {
@@ -102,35 +97,35 @@ public class DefaultMappings implements INameGenerator {
         }
         // replace global ones with local ones that dont contain all classes
         HashSet<String> methodDescs = this.methodDescs.get(className);
-        Hashtable<String, Hashtable<String, String>> obfuscatedMethodNames = this.obfuscatedMethodNames.get(className); // desc, name
+        Hashtable<String, Hashtable<String, String>> obfuscatedMethodNames = this.obfuscatedMethodNames.get(className); // params, name
         Hashtable<String, char[]> methodLetters = this.methodLetters.get(className); // desc
         
-        // grouping methods by descriptor, only methods with new descriptor from need new name
-        if (!methodDescs.contains(descriptor)) {
+        // grouping methods by descriptor, only methods with known params need new name
+        if (!methodDescs.contains(params)) {
             // initializing letter array and new hashables
-            obfuscatedMethodNames.put(descriptor, new Hashtable<>());
+            obfuscatedMethodNames.put(params, new Hashtable<>());
             
             int additionalOffset = methodDescs.size() / maxNumberOfAutoOverloading; // start new names for methods with a new descriptor with another letter after certain number of overloads
             char[] methodLettersChar = new char[]{'a'};
             for (int i = 0; i < additionalOffset; i++) {
                 methodLettersChar = generateNextName(methodLettersChar);
             }
-            methodLetters.put(descriptor, methodLettersChar);
+            methodLetters.put(params, methodLettersChar);
             
-            methodDescs.add(descriptor);
+            methodDescs.add(params);
         }
         
-        String result = this.toString(methodLetters.get(descriptor));
-        obfuscatedMethodNames.get(descriptor).put(orig, result);
-        methodLetters.put(descriptor, this.generateNextName(methodLetters.get(descriptor)));
+        String result = new String(methodLetters.get(params));
+        obfuscatedMethodNames.get(params).put(orig, result);
+        methodLetters.put(params, this.generateNextName(methodLetters.get(params)));
     }
     
     public String getMethodName(String orig, String className, String descriptor) {
-        descriptor = descriptor.split("\\)")[0];
+        String params = descriptor.split("\\)")[0];
         if (obfuscatedMethodNames.containsKey(className) && // check if methods from class are obfuscated
-                    obfuscatedMethodNames.get(className).containsKey(descriptor) && // check if desc is obfuscated
-                        obfuscatedMethodNames.get(className).get(descriptor).containsKey(orig)) { // check if method is obfuscated
-            return obfuscatedMethodNames.get(className).get(descriptor).get(orig);
+                    obfuscatedMethodNames.get(className).containsKey(params) && // check if desc is obfuscated
+                        obfuscatedMethodNames.get(className).get(params).containsKey(orig)) { // check if method is obfuscated
+            return obfuscatedMethodNames.get(className).get(params).get(orig);
         }
         return orig;
     }
@@ -147,7 +142,7 @@ public class DefaultMappings implements INameGenerator {
         Hashtable<String, String> obfuscatedFieldNames = this.obfuscatedFieldNames.get(className);
         
         // store obfuscated name and generate next one
-        String result = this.toString(fieldLetters);
+        String result = new String(fieldLetters);
         obfuscatedFieldNames.put(orig, result);
         this.fieldLetters.put(className, generateNextName(fieldLetters));
     }
@@ -182,13 +177,5 @@ public class DefaultMappings implements INameGenerator {
         }
         
         return letters;
-    }
-    
-    private String toString(char[] letters) {
-        StringBuilder name = new StringBuilder();
-        for (char letter : letters) {
-            name.append(letter);
-        }
-        return name.toString();
     }
 }

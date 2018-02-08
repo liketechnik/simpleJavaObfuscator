@@ -1,6 +1,5 @@
 package florian.simpleJavaObfuscator.names;
 
-
 import florian.simpleJavaObfuscator.util.obfuscation.INameGenerator;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
